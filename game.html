@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SUCCINCT GPU RANDOMIZER</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #ffc0cb;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    .header-image img {
+      width: 200px;
+      margin: 0 auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+
+    .divider {
+      width: 60%;
+      margin: 10px auto 20px;
+      border: 0;
+      height: 3px;
+      background: linear-gradient(to right, #ff69b4, #ffe4e1, #ff69b4);
+      border-radius: 2px;
+    }
+
+    .slider-window {
+      width: 400px;
+      height: 250px;
+      margin: 0 auto;
+      overflow: hidden;
+      border: 6px solid #ff69b4;
+      border-radius: 12px;
+      background: white;
+    }
+
+    .image-strip {
+      display: flex;
+      transition: transform 0.3s ease-out;
+    }
+
+    .image-strip img {
+      width: 400px;
+      height: 250px;
+      flex-shrink: 0;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 40px;
+      font-size: 20px;
+      background-color: #ff69b4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ff1493;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      color: #d63384;
+    }
+
+    #sprinkles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .sprinkle {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      position: absolute;
+      background-color: pink;
+      animation: fall 1s linear forwards;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-image">
+      <img src="assets/suc-logo.webp" alt="Game Header" />
+    </div>
+
+    <h1>SUCCINCT ARMY RANDOMIZER</h1>
+    <hr class="divider" />
+
+    <div class="slider-window">
+      <div class="image-strip" id="imageStrip">
+        <img src="assets/suc-blue.webp" alt="Blue Option" />
+        <img src="assets/suc-green.webp" alt="Green Option" />
+        <img src="assets/suc-orange.webp" alt="Orange Option" />
+        <img src="assets/suc-pink.webp" alt="Pink Option" />
+        <img src="assets/suc-purple.webp" alt="Purple Option" />
+      </div>
+    </div>
+
+    <button id="startBtn">Start</button>
+    <div id="result"></div>
+    <div id="sprinkles"></div>
+  </div>
+
+  <script>
+    const imageStrip = document.getElementById('imageStrip');
+    const startBtn = document.getElementById('startBtn');
+    const resultDiv = document.getElementById('result');
+    const sprinkles = document.getElementById('sprinkles');
+
+    const images = imageStrip.querySelectorAll('img');
+    const totalImages = images.length;
+
+    window.addEventListener('load', () => {
+      const imageWidth = images[0].clientWidth;
+
+      startBtn.addEventListener('click', () => {
+        resultDiv.innerText = '';
+        imageStrip.style.transition = 'none';
+
+        let position = 0;
+        let speed = 20;
+        let duration = 3000;
+
+        const loop = setInterval(() => {
+          position -= speed;
+          if (Math.abs(position) >= imageWidth * totalImages) {
+            position = 0;
+          }
+          imageStrip.style.transform = `translateX(${position}px)`;
+        }, 16);
+
+        setTimeout(() => {
+          clearInterval(loop);
+
+          const randomIndex = Math.floor(Math.random() * totalImages);
+          const finalPosition = -randomIndex * imageWidth;
+
+          imageStrip.style.transition = 'transform 0.8s ease-out';
+          imageStrip.style.transform = `translateX(${finalPosition}px)`;
+
+          resultDiv.innerText = `🎉 Selected: Option ${randomIndex + 1}`;
+          launchSprinkles();
+        }, duration);
+      });
+    });
+
+    function launchSprinkles() {
+      for (let i = 0; i < 40; i++) {
+        const s = document.createElement('div');
+        s.className = 'sprinkle';
+        s.style.left = Math.random() * window.innerWidth + 'px';
+        s.style.top = '-10px';
+        s.style.backgroundColor = getRandomColor();
+        sprinkles.appendChild(s);
+        setTimeout(() => s.remove(), 1000);
+      }
+    }
+
+    function getRandomColor() {
+      const colors = ['#ff69b4', '#ffe4e1', '#ffc0cb', '#ffb6c1', '#ffa6c9'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+  </script>
+</body>
+</html>
